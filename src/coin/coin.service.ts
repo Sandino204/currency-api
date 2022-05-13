@@ -18,121 +18,72 @@ export class CoinService {
   constructor(private readonly coinRepository: CoinRepository) {}
 
   async getAllCoins(): Promise<Coin[]> {
-    try {
-      const coins = await this.coinRepository.findAll();
+    const coins = await this.coinRepository.findAll();
 
-      if (!coins) {
-        throw new NotFoundException({
-          message: 'Coins not found',
-        });
-      }
-
-      return coins;
-    } catch (err) {
-      console.log(err);
-
-      throw new InternalServerErrorException({
-        message: 'Something went wrong',
+    if (!coins) {
+      throw new NotFoundException({
+        message: 'Coins not found',
       });
     }
+
+    return coins;
   }
 
   async getCoinById(id: string): Promise<Coin> {
-    try {
-      const coin = await this.coinRepository.findByID(id);
+    const coin = await this.coinRepository.findByID(id);
 
-      if (!coin) {
-        throw new NotFoundException({
-          message: 'Coins not found',
-        });
-      }
-
-      return coin;
-    } catch (err) {
-      console.log(err);
-
-      throw new InternalServerErrorException({
-        message: 'Something went wrong',
+    if (!coin) {
+      throw new NotFoundException({
+        message: 'Coins not found',
       });
     }
+
+    return coin;
   }
 
   async getCoinByCode(code: string): Promise<Coin> {
-    try {
-      const coin = await this.coinRepository.findByCode(code);
+    const coin = await this.coinRepository.findByCode(code);
 
-      if (!coin) {
-        throw new NotFoundException({
-          message: 'Coins not found',
-        });
-      }
-
-      return coin;
-    } catch (err) {
-      console.log(err);
-
-      throw new InternalServerErrorException({
-        message: 'Something went wrong',
+    if (!coin) {
+      throw new NotFoundException({
+        message: 'Coins not found',
       });
     }
+
+    return coin;
   }
 
   async createCoin(input: CreateCoinDto): Promise<Coin> {
-    try {
-      const existCoin = await this.coinRepository.findByCode(input.code);
+    const existCoin = await this.coinRepository.findByCode(input.code);
 
-      console.log(existCoin);
+    console.log(existCoin);
 
-      if (existCoin !== null) {
-        throw new ConflictException({
-          message: 'Coin with code already exists',
-        });
-      }
-
-      const newCoin = await this.coinRepository.create(input);
-
-      return newCoin;
-    } catch (err) {
-      console.log(err);
-
-      throw new InternalServerErrorException({
-        message: 'Something went wrong',
+    if (existCoin !== null) {
+      throw new ConflictException({
+        message: 'Coin with code already exists',
       });
     }
+
+    const newCoin = await this.coinRepository.create(input);
+
+    return newCoin;
   }
 
   async updateCoin(input: UpdateCoinDto): Promise<void> {
-    try {
-      const coin = await this.getCoinByCode(input.code);
+    const coin = await this.getCoinByCode(input.code);
 
-      const updateCoin: UpdateCoinDto = {
-        code: input.code,
-        name: typeof input.name !== 'undefined' ? input.name : coin.name,
-        symbol:
-          typeof input.symbol !== 'undefined' ? input.symbol : coin.symbol,
-      };
+    const updateCoin: UpdateCoinDto = {
+      code: input.code,
+      name: typeof input.name !== 'undefined' ? input.name : coin.name,
+      symbol: typeof input.symbol !== 'undefined' ? input.symbol : coin.symbol,
+    };
 
-      await this.coinRepository.update(updateCoin);
-    } catch (err) {
-      console.log(err);
-
-      throw new InternalServerErrorException({
-        message: 'Something went wrong',
-      });
-    }
+    await this.coinRepository.update(updateCoin);
   }
 
   async deleteCoin(code: string): Promise<void> {
-    try {
-      await this.getCoinByCode(code);
+    await this.getCoinByCode(code);
 
-      await this.coinRepository.delete(code);
-    } catch (err) {
-      console.log(err);
-
-      throw new InternalServerErrorException({
-        message: 'Something went wrong',
-      });
-    }
+    await this.coinRepository.delete(code);
   }
 }

@@ -21,6 +21,6 @@ export class UpdateCoinDto {
   @IsString()
   @IsOptional()
   @MaxLength(3)
-  @MaxLength(3)
+  @MinLength(3)
   code?: string;
 }
