@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConversionRepository } from '../conversion.repository';
 import { ConversionService } from '../conversion.service';
-import { Conversion } from '../conversion.entity';
 import { CoinRepository } from '../../coin/coin.repository';
 import { getModelToken } from '@nestjs/mongoose';
 import { ConversionController } from '../conversion.controller';

@@ -14,6 +14,7 @@ import { ConversionDto } from './dto/conversion.dto';
 import { Conversion } from './conversion.entity';
 import { DirectedGraph } from 'graphology';
 import { bidirectional } from 'graphology-shortest-path';
+import { ShortestPath, ShortestPathMapping } from 'graphology-shortest-path/unweighted';
 
 @Injectable()
 export class ConversionService {
@@ -64,7 +65,9 @@ export class ConversionService {
 
     const allConversions = await this.conversionRepository.findAll();
 
-    const path = await this.graphSearchPath(allConversions, from, to);
+    const graph = await this.graphSearch(allConversions);
+
+    const path = await this.getPath({ graph, from, to });
 
     if (path === null) {
       throw new ConflictException({
@@ -148,11 +151,7 @@ export class ConversionService {
     return true;
   }
 
-  private graphSearchPath(
-    conversions: Conversion[],
-    from: string,
-    to: string,
-  ): string[] {
+  private graphSearch(conversions: Conversion[]): DirectedGraph {
     const graph = new DirectedGraph();
 
     conversions.forEach((conversion) => {
@@ -185,6 +184,22 @@ export class ConversionService {
 
       graph.addEdge(conversion.from, conversion.to);
     });
+
+    return graph;
+  }
+
+  private getPath(input: {
+    graph: DirectedGraph;
+    from: string;
+    to: string;
+  }): ShortestPath {
+    const { from, to, graph } = input;
+    const hasFrom = graph.hasNode(from);
+    const hasTo = graph.hasNode(to);
+
+    if (!hasFrom || !hasTo) {
+      return null;
+    }
 
     return bidirectional(graph, from, to);
   }
