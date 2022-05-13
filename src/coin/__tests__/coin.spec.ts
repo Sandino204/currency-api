@@ -3,13 +3,7 @@ import { CoinRepository } from '../coin.repository';
 import { CoinController } from '../coin.controller';
 import { Coin } from '../coin.entity';
 import { CoinService } from '../coin.service';
-
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 
 const getAllCoins: Coin[] = [
@@ -40,7 +34,6 @@ const createdCoin: Coin = {
 describe('coin controller', () => {
   let coinRepository: CoinRepository;
   let coinController: CoinController;
-  let coinMock: any;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({

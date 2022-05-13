@@ -4,7 +4,6 @@ https://docs.nestjs.com/providers#services
 
 import {
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
