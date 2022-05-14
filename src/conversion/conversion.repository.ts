@@ -33,6 +33,24 @@ export class ConversionRepository {
     }
   }
 
+  async findAllByFrom(from: string): Promise<Conversion[]> {
+    try {
+      const conversions = this.conversionModel
+        .find({
+          from,
+        })
+        .lean();
+
+      return conversions;
+    } catch (err) {
+      console.log(err);
+
+      throw new InternalServerErrorException({
+        message: 'Something went wrong',
+      });
+    }
+  }
+
   async upsertConversion(input: {
     from: string;
     to: string;

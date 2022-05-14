@@ -108,7 +108,7 @@ describe('ConversionController', () => {
         from: 'teste1',
         to: 'teste',
         value: 10,
-        converted: 100,
+        conversion: 100,
       });
     });
 
@@ -190,6 +190,269 @@ describe('ConversionController', () => {
         conversionController.convert({
           from: 'TT1',
           to: 'TT2',
+          value: 10,
+        }),
+      ).rejects.toThrow(error);
+    });
+  });
+
+  describe('convert to all coins', () => {
+    it('should convert to all coins without deep graph search', async () => {
+      jest.spyOn(coinRepository, 'findAll').mockResolvedValue([
+        {
+          code: 'TTT',
+          symbol: 'T',
+          name: 'teste',
+        },
+        {
+          code: 'TT1',
+          symbol: 'T1',
+          name: 'teste 1',
+        },
+        {
+          code: 'TT2',
+          symbol: 'T2',
+          name: 'teste 2',
+        },
+      ]);
+
+      jest.spyOn(coinRepository, 'findByCode').mockResolvedValue({
+        code: 'TTT',
+        symbol: 'T',
+        name: 'teste',
+      });
+
+      jest.spyOn(conversionRepository, 'findAllByFrom').mockResolvedValue([
+        {
+          to: 'TT1',
+          from: 'TTT',
+          conversion: 10,
+        },
+        {
+          to: 'TT2',
+          from: 'TTT',
+          conversion: 10,
+        },
+      ]);
+
+      await expect(
+        conversionController.convertAll({
+          from: 'TTT',
+          value: 10,
+        }),
+      ).resolves.toEqual({
+        conversions: [
+          {
+            to: 'TT1',
+            from: 'TTT',
+            value: 10,
+            conversion: 100,
+          },
+          {
+            to: 'TT2',
+            from: 'TTT',
+            value: 10,
+            conversion: 100,
+          },
+        ],
+      });
+    });
+
+    it('it should convert with deep graph search', async () => {
+      jest.spyOn(coinRepository, 'findAll').mockResolvedValue([
+        {
+          code: 'TTT',
+          symbol: 'T',
+          name: 'teste',
+        },
+        {
+          code: 'TT1',
+          symbol: 'T1',
+          name: 'teste 1',
+        },
+        {
+          code: 'TT2',
+          symbol: 'T2',
+          name: 'teste 2',
+        },
+      ]);
+
+      jest.spyOn(coinRepository, 'findByCode').mockResolvedValue({
+        code: 'TTT',
+        symbol: 'T',
+        name: 'teste',
+      });
+
+      jest.spyOn(conversionRepository, 'findAllByFrom').mockResolvedValue([
+        {
+          to: 'TT1',
+          from: 'TTT',
+          conversion: 10,
+        },
+      ]);
+
+      jest.spyOn(conversionRepository, 'findAll').mockResolvedValue([
+        {
+          to: 'TT1',
+          from: 'TTT',
+          conversion: 10,
+        },
+        {
+          to: 'TT2',
+          from: 'TT1',
+          conversion: 10,
+        },
+      ]);
+
+      jest.spyOn(conversionRepository, 'upsertConversion').mockResolvedValue({
+        from: 'TTT',
+        to: 'TT1',
+        conversion: 10,
+      });
+
+      await expect(
+        conversionController.convertAll({
+          from: 'TTT',
+          value: 10,
+        }),
+      ).resolves.toEqual({
+        conversions: [
+          {
+            to: 'TT1',
+            from: 'TTT',
+            value: 10,
+            conversion: 100,
+          },
+          {
+            to: 'TT2',
+            from: 'TTT',
+            value: 10,
+            conversion: 1000,
+          },
+        ],
+      });
+    });
+
+    it('should convert but have not enough data to convert', async () => {
+      jest.spyOn(coinRepository, 'findAll').mockResolvedValue([
+        {
+          code: 'TTT',
+          symbol: 'T',
+          name: 'teste',
+        },
+        {
+          code: 'TT1',
+          symbol: 'T1',
+          name: 'teste 1',
+        },
+        {
+          code: 'TT2',
+          symbol: 'T2',
+          name: 'teste 2',
+        },
+      ]);
+
+      jest.spyOn(coinRepository, 'findByCode').mockResolvedValue({
+        code: 'TTT',
+        symbol: 'T',
+        name: 'teste',
+      });
+
+      jest.spyOn(conversionRepository, 'findAllByFrom').mockResolvedValue([
+        {
+          to: 'TT1',
+          from: 'TTT',
+          conversion: 10,
+        },
+      ]);
+
+      jest.spyOn(conversionRepository, 'findAll').mockResolvedValue([
+        {
+          to: 'TT1',
+          from: 'TTT',
+          conversion: 10,
+        },
+      ]);
+
+      jest.spyOn(conversionRepository, 'upsertConversion').mockResolvedValue({
+        from: 'TTT',
+        to: 'TT1',
+        conversion: 10,
+      });
+
+      await expect(
+        conversionController.convertAll({
+          from: 'TTT',
+          value: 10,
+        }),
+      ).resolves.toEqual({
+        conversions: [
+          {
+            to: 'TT1',
+            from: 'TTT',
+            value: 10,
+            conversion: 100,
+          },
+          {
+            to: 'TT2',
+            from: 'TTT',
+            value: 10,
+            conversion: 'not enough data to convert',
+          },
+        ],
+      });
+    });
+
+    it('should not convert because from not valid', async () => {
+      jest.spyOn(coinRepository, 'findAll').mockResolvedValue([
+        {
+          code: 'TTT',
+          symbol: 'T',
+          name: 'teste',
+        },
+        {
+          code: 'TT1',
+          symbol: 'T1',
+          name: 'teste 1',
+        },
+        {
+          code: 'TT2',
+          symbol: 'T2',
+          name: 'teste 2',
+        },
+      ]);
+
+      jest.spyOn(coinRepository, 'findByCode').mockResolvedValue(null);
+
+      jest.spyOn(conversionRepository, 'findAllByFrom').mockResolvedValue([
+        {
+          to: 'TT1',
+          from: 'TTT',
+          conversion: 10,
+        },
+      ]);
+
+      jest.spyOn(conversionRepository, 'findAll').mockResolvedValue([
+        {
+          to: 'TT1',
+          from: 'TTT',
+          conversion: 10,
+        },
+      ]);
+
+      jest.spyOn(conversionRepository, 'upsertConversion').mockResolvedValue({
+        from: 'TTT',
+        to: 'TT1',
+        conversion: 10,
+      });
+
+      const error = new NotFoundException({
+        message: 'from coin not found',
+      });
+
+      await expect(
+        conversionController.convertAll({
+          from: 'TTT',
           value: 10,
         }),
       ).rejects.toThrow(error);

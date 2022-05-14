@@ -14,7 +14,10 @@ import { ConversionDto } from './dto/conversion.dto';
 import { Conversion } from './conversion.entity';
 import { DirectedGraph } from 'graphology';
 import { bidirectional } from 'graphology-shortest-path';
-import { ShortestPath, ShortestPathMapping } from 'graphology-shortest-path/unweighted';
+import { ShortestPath } from 'graphology-shortest-path/unweighted';
+import { ConversionAllResponse } from './interfaces/conversion';
+import { ConversionResponse } from './interfaces/conversion-response';
+import { Coin } from 'src/coin/coin.entity';
 
 @Injectable()
 export class ConversionService {
@@ -38,7 +41,7 @@ export class ConversionService {
     };
   }
 
-  async convert(input: ConversionDto): Promise<any> {
+  async convert(input: ConversionDto): Promise<ConversionResponse> {
     const { from, to, value } = input;
 
     await this.checkIfCoinsExists({
@@ -57,7 +60,7 @@ export class ConversionService {
         from,
         to,
         value,
-        converted: existsWhitDepthZero.conversion * value,
+        conversion: existsWhitDepthZero.conversion * value,
       };
 
       return result;
@@ -104,11 +107,14 @@ export class ConversionService {
 
   private async checkIfCoinsExists(input: {
     from: string;
-    to: string;
+    to?: string;
   }): Promise<boolean> {
     const { from, to } = input;
-    const toCoin = await this.coinRepository.findByCode(from);
-    const fromCoin = await this.coinRepository.findByCode(to);
+    let toCoin;
+    if (to) {
+      toCoin = await this.coinRepository.findByCode(to);
+    }
+    const fromCoin = await this.coinRepository.findByCode(from);
 
     if (fromCoin === null) {
       throw new NotFoundException({
@@ -202,5 +208,115 @@ export class ConversionService {
     }
 
     return bidirectional(graph, from, to);
+  }
+
+  async convertInAllCoins(input: {
+    from: string;
+    value: number;
+  }): Promise<ConversionAllResponse> {
+    const { from, value } = input;
+
+    await this.checkIfCoinsExists({
+      from,
+    });
+
+    const allCoins = await this.coinRepository.findAll();
+
+    const coinsForQuery = allCoins.filter((coin) => coin.code !== from);
+
+    const convertionsByCoin = await this.conversionRepository.findAllByFrom(
+      from,
+    );
+
+    if (convertionsByCoin.length === coinsForQuery.length) {
+      const conversions: any = convertionsByCoin.map((conversion) => {
+        return {
+          from: from,
+          to: conversion.to,
+          value: value,
+          conversion: conversion.conversion * value,
+        };
+      });
+
+      return {
+        conversions,
+      };
+    }
+
+    const conversions = await this.convertAllCoinsByGraph({
+      coinsForQuery,
+      from,
+      value,
+    });
+
+    return {
+      conversions,
+    };
+  }
+
+  private async convertAllCoinsByGraph(input: {
+    coinsForQuery: Coin[];
+    from: string;
+    value: number;
+  }) {
+    const { coinsForQuery, from, value } = input;
+    const allConversions = await this.conversionRepository.findAll();
+
+    const graph = this.graphSearch(allConversions);
+
+    const allPaths: ShortestPath[] = [];
+
+    for (let i = 0; i < coinsForQuery.length; i++) {
+      allPaths.push(
+        this.getPath({
+          from,
+          graph,
+          to: coinsForQuery[i].code,
+        }),
+      );
+    }
+
+    const conversions: any = await Promise.all(
+      allPaths.map(async (path, i) => {
+        if (path === null) {
+          const result: ConversionResponse = {
+            from,
+            to: coinsForQuery[i].code,
+            value,
+            conversion: 'not enough data to convert',
+          };
+
+          return result;
+        }
+
+        let acumulator: number = value;
+
+        for (let i = 0; i < path.length - 1; i++) {
+          const change = allConversions.filter(
+            (conversion) =>
+              conversion.from === path[i] && conversion.to === path[i + 1],
+          )[0];
+
+          acumulator *= change.conversion;
+        }
+
+        await this.upsertConversion({
+          from,
+          to: coinsForQuery[i].code,
+          conversion: acumulator / value,
+        });
+
+        const result: ConversionResponse = {
+          from,
+          to: coinsForQuery[i].code,
+          value,
+          conversion: acumulator,
+        };
+
+        return result;
+      }),
+    );
+
+    return conversions;
   }
 }
