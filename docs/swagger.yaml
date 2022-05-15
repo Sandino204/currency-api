@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: exchangeApi
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /coin:
+    get:
+      tags:
+        - default
+      summary: get all coin
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - default
+      summary: create new coin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Bitcoin
+                symbol: Bit
+                code: BTC
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /coin/USD:
+    get:
+      tags:
+        - default
+      summary: get one coin
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    patch:
+      tags:
+        - default
+      summary: update an existing coin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: Dolar Americano
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /coin/BRL:
+    delete:
+      tags:
+        - default
+      summary: delete coin
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /conversion/load:
+    put:
+      tags:
+        - default
+      summary: load new conversion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                from: USD
+                to: BRL
+                conversion: 5.65
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /conversion:
+    post:
+      tags:
+        - default
+      summary: convert a value to another coin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                from: BTC
+                to: ARS
+                value: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /conversion/all:
+    post:
+      tags:
+        - default
+      summary: convert to all coins of the database
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                from: BRL
+                value: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
