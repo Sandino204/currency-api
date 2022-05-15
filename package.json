@@ -1,5 +1,5 @@
 {
-  "name": "exchange",
+  "name": "currency",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "dotenv": "^16.0.1",
     "graphology": "^0.24.1",
     "graphology-shortest-path": "^2.0.1",
     "graphology-types": "^0.24.4",

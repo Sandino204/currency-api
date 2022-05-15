@@ -4,11 +4,14 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
+import 'dotenv/config';
 
 @Module({
   imports: [
     ConversionModule,
-    MongooseModule.forRoot(`mongodb://test:123456@localhost:27017/`),
+    MongooseModule.forRoot(
+      `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@mongodb:27017/`,
+    ),
     CoinModule,
   ],
   controllers: [AppController],
