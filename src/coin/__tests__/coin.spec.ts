@@ -5,6 +5,7 @@ import { Coin } from '../coin.entity';
 import { CoinService } from '../coin.service';
 import { NotFoundException, ConflictException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
+import { ConversionRepository } from '../../conversion/conversion.repository';
 
 const getAllCoins: Coin[] = [
   {
@@ -34,14 +35,20 @@ const createdCoin: Coin = {
 describe('coin controller', () => {
   let coinRepository: CoinRepository;
   let coinController: CoinController;
+  let conversionRepository: ConversionRepository;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       providers: [
         CoinRepository,
+        ConversionRepository,
         CoinService,
         {
           provide: getModelToken('Coin'),
+          useValue: {},
+        },
+        {
+          provide: getModelToken('Conversion'),
           useValue: {},
         },
       ],
@@ -50,6 +57,7 @@ describe('coin controller', () => {
 
     coinController = app.get(CoinController);
     coinRepository = app.get(CoinRepository);
+    conversionRepository = app.get(ConversionRepository);
   });
 
   describe('Get all Coins', () => {
@@ -164,15 +172,23 @@ describe('coin controller', () => {
 
       jest.spyOn(coinRepository, 'delete').mockResolvedValue(undefined);
 
+      jest
+        .spyOn(conversionRepository, 'deleteAllConversionsByCoin')
+        .mockResolvedValue(undefined);
+
       await expect(coinController.deleteCoin('ttt')).resolves.toEqual(
         undefined,
       );
     });
 
-    it('should delete', async () => {
+    it('should get an error delete', async () => {
       jest.spyOn(coinRepository, 'findByCode').mockResolvedValue(null);
 
       jest.spyOn(coinRepository, 'delete').mockResolvedValue(undefined);
+
+      jest
+        .spyOn(conversionRepository, 'deleteAllConversionsByCoin')
+        .mockResolvedValue(undefined);
 
       const error = new NotFoundException({
         message: 'Coins not found',

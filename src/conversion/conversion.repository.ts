@@ -10,6 +10,20 @@ export class ConversionRepository {
     private readonly conversionModel: Model<ConversionDocument>,
   ) {}
 
+  async findAll(): Promise<Conversion[]> {
+    try {
+      const conversions = this.conversionModel.find().lean();
+
+      return conversions;
+    } catch (err) {
+      console.log(err);
+
+      throw new InternalServerErrorException({
+        message: 'Something went wrong',
+      });
+    }
+  }
+
   async findExactConversion(input: {
     from: string;
     to: string;
@@ -83,11 +97,15 @@ export class ConversionRepository {
     }
   }
 
-  async findAll(): Promise<Conversion[]> {
+  async deleteAllConversionsByCoin(coin: string): Promise<void> {
     try {
-      const conversions = this.conversionModel.find().lean();
+      await this.conversionModel.deleteMany({
+        from: coin,
+      });
 
-      return conversions;
+      await this.conversionModel.deleteMany({
+        to: coin,
+      });
     } catch (err) {
       console.log(err);
 

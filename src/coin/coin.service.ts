@@ -1,7 +1,3 @@
-/*
-https://docs.nestjs.com/providers#services
-*/
-
 import {
   Injectable,
   NotFoundException,
@@ -11,10 +7,14 @@ import { CoinRepository } from './coin.repository';
 import { Coin } from './coin.entity';
 import { CreateCoinDto } from './dto/create-coin.dto';
 import { UpdateCoinDto } from './dto/update-coin.dto';
+import { ConversionRepository } from '../conversion/conversion.repository';
 
 @Injectable()
 export class CoinService {
-  constructor(private readonly coinRepository: CoinRepository) {}
+  constructor(
+    private readonly coinRepository: CoinRepository,
+    private readonly conversionRepository: ConversionRepository,
+  ) {}
 
   async getAllCoins(): Promise<Coin[]> {
     const coins = await this.coinRepository.findAll();
@@ -84,5 +84,7 @@ export class CoinService {
     await this.getCoinByCode(code);
 
     await this.coinRepository.delete(code);
+
+    await this.conversionRepository.deleteAllConversionsByCoin(code);
   }
 }
