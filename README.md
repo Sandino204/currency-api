@@ -24,7 +24,7 @@
 - https://app.swaggerhub.com/apis/Sandino204/CurrencyApi/1.0.0/
 
 ### openApi yaml
-- swagger.yaml na raiz do projeto possui o yaml que foi usado para criar a documentação no swaggerhub para poder ser editada e usada em outros ambientes
+- swagger.yaml in the project root has the yaml which was used to create the documentation in swaggerhub so it can be edited and used in other environments
 
 ## Use the API
 
