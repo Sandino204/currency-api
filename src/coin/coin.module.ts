@@ -5,6 +5,7 @@ import { Coin, CoinSchema } from './coin.entity';
 import { Module } from '@nestjs/common';
 import { CoinRepository } from './coin.repository';
 import { Conversion, ConversionSchema } from '../conversion/conversion.entity';
+import { ConversionRepository } from 'src/conversion/conversion.repository';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { Conversion, ConversionSchema } from '../conversion/conversion.entity';
     ]),
   ],
   controllers: [CoinController],
-  providers: [CoinService, CoinRepository],
+  providers: [CoinService, CoinRepository, ConversionRepository],
 })
 export class CoinModule {}
