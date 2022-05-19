@@ -12,10 +12,10 @@ export class ConversionAllDto {
   @IsNotEmpty()
   @MaxLength(3)
   @MinLength(3)
-  from: string;
+    from: string;
 
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  value: number;
+    value: number;
 }

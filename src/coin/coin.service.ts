@@ -55,8 +55,6 @@ export class CoinService {
   async createCoin(input: CreateCoinDto): Promise<Coin> {
     const existCoin = await this.coinRepository.findByCode(input.code);
 
-    console.log(existCoin);
-
     if (existCoin !== null) {
       throw new ConflictException({
         message: 'Coin with code already exists',

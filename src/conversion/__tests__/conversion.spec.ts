@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
+import { NotFoundException } from '@nestjs/common';
 import { ConversionRepository } from '../conversion.repository';
 import { ConversionService } from '../conversion.service';
 import { CoinRepository } from '../../coin/coin.repository';
-import { getModelToken } from '@nestjs/mongoose';
 import { ConversionController } from '../conversion.controller';
-import { NotFoundException } from '@nestjs/common';
 
 describe('ConversionController', () => {
   let coinRepository: CoinRepository;

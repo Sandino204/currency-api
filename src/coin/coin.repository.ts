@@ -17,8 +17,6 @@ export class CoinRepository {
 
       return coins;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -31,8 +29,6 @@ export class CoinRepository {
 
       return coin;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -45,8 +41,6 @@ export class CoinRepository {
 
       return coin;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -59,8 +53,6 @@ export class CoinRepository {
 
       return newCoin;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -79,8 +71,6 @@ export class CoinRepository {
         },
       );
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -93,8 +83,6 @@ export class CoinRepository {
         code,
       });
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });

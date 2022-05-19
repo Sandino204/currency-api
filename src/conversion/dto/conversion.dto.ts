@@ -12,16 +12,16 @@ export class ConversionDto {
   @IsNotEmpty()
   @MaxLength(3)
   @MinLength(3)
-  from: string;
+    from: string;
 
   @IsString()
   @IsNotEmpty()
   @MaxLength(3)
   @MinLength(3)
-  to: string;
+    to: string;
 
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  value: number;
+    value: number;
 }

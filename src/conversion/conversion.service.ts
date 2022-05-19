@@ -3,17 +3,17 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { DirectedGraph } from 'graphology';
+import { bidirectional } from 'graphology-shortest-path';
+import { ShortestPath } from 'graphology-shortest-path/unweighted';
+import { Coin } from 'src/coin/coin.entity';
 import { CoinRepository } from '../coin/coin.repository';
 import { ConversionRepository } from './conversion.repository';
 import { LoadConversionDto } from './dto/load-conversion.dto';
 import { ConversionDto } from './dto/conversion.dto';
 import { Conversion } from './conversion.entity';
-import { DirectedGraph } from 'graphology';
-import { bidirectional } from 'graphology-shortest-path';
-import { ShortestPath } from 'graphology-shortest-path/unweighted';
 import { ConversionAllResponse } from './interfaces/conversion';
 import { ConversionResponse } from './interfaces/conversion-response';
-import { Coin } from 'src/coin/coin.entity';
 
 @Injectable()
 export class ConversionService {
@@ -45,11 +45,10 @@ export class ConversionService {
       from,
     });
 
-    const existsWhitDepthZero =
-      await this.conversionRepository.findExactConversion({
-        from,
-        to,
-      });
+    const existsWhitDepthZero = await this.conversionRepository.findExactConversion({
+      from,
+      to,
+    });
 
     if (existsWhitDepthZero !== null) {
       const result = {
@@ -64,9 +63,9 @@ export class ConversionService {
 
     const allConversions = await this.conversionRepository.findAll();
 
-    const graph = await this.graphSearch(allConversions);
+    const graph = this.graphSearch(allConversions);
 
-    const path = await this.getPath({ graph, from, to });
+    const path = this.getPath({ graph, from, to });
 
     if (path === null) {
       throw new ConflictException({
@@ -76,10 +75,9 @@ export class ConversionService {
 
     let acumulator: number = value;
 
-    for (let i = 0; i < path.length - 1; i++) {
+    for (let i = 0; i < path.length - 1; i += 1) {
       const change = allConversions.filter(
-        (conversion) =>
-          conversion.from === path[i] && conversion.to === path[i + 1],
+        (conversion) => conversion.from === path[i] && conversion.to === path[i + 1],
       )[0];
 
       acumulator *= change.conversion;
@@ -140,15 +138,11 @@ export class ConversionService {
       conversion,
     });
 
-    console.log(createConversion);
-
     const reverseConversion = await this.conversionRepository.upsertConversion({
       from: to,
       to: from,
       conversion: 1 / conversion,
     });
-
-    console.log(reverseConversion);
 
     return true;
   }
@@ -163,12 +157,10 @@ export class ConversionService {
           [conversion.to]: conversion.conversion,
         });
       } else {
-        graph.updateNode(conversion.from, (attr) => {
-          return {
-            ...attr,
-            [conversion.to]: conversion.conversion,
-          };
-        });
+        graph.updateNode(conversion.from, (attr) => ({
+          ...attr,
+          [conversion.to]: conversion.conversion,
+        }));
       }
       const hasTo = graph.hasNode(conversion.to);
       if (hasTo === false) {
@@ -176,12 +168,10 @@ export class ConversionService {
           [conversion.from]: 1 / conversion.conversion,
         });
       } else {
-        graph.updateNode(conversion.to, (attr) => {
-          return {
-            ...attr,
-            [conversion.from]: 1 / conversion.conversion,
-          };
-        });
+        graph.updateNode(conversion.to, (attr) => ({
+          ...attr,
+          [conversion.from]: 1 / conversion.conversion,
+        }));
       }
 
       graph.addEdge(conversion.from, conversion.to);
@@ -225,14 +215,12 @@ export class ConversionService {
     );
 
     if (convertionsByCoin.length === coinsForQuery.length) {
-      const conversions: any = convertionsByCoin.map((conversion) => {
-        return {
-          from: from,
-          to: conversion.to,
-          value: value,
-          conversion: conversion.conversion * value,
-        };
-      });
+      const conversions = convertionsByCoin.map((conversion) => ({
+        from,
+        to: conversion.to,
+        value,
+        conversion: conversion.conversion * value,
+      }));
 
       return {
         conversions,
@@ -262,7 +250,7 @@ export class ConversionService {
 
     const allPaths: ShortestPath[] = [];
 
-    for (let i = 0; i < coinsForQuery.length; i++) {
+    for (let i = 0; i < coinsForQuery.length; i += 1) {
       allPaths.push(
         this.getPath({
           from,
@@ -272,7 +260,7 @@ export class ConversionService {
       );
     }
 
-    const conversions: any = await Promise.all(
+    const conversions = await Promise.all(
       allPaths.map(async (path, i) => {
         if (path === null) {
           const result: ConversionResponse = {
@@ -287,10 +275,9 @@ export class ConversionService {
 
         let acumulator: number = value;
 
-        for (let i = 0; i < path.length - 1; i++) {
+        for (let j = 0; j < path.length - 1; j += 1) {
           const change = allConversions.filter(
-            (conversion) =>
-              conversion.from === path[i] && conversion.to === path[i + 1],
+            (conversion) => conversion.from === path[j] && conversion.to === path[j + 1],
           )[0];
 
           acumulator *= change.conversion;

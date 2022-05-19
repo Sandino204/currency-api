@@ -14,10 +14,8 @@ export class ConversionRepository {
     try {
       const conversions = this.conversionModel.find().lean();
 
-      return conversions;
+      return await conversions;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -39,8 +37,6 @@ export class ConversionRepository {
 
       return conversion;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -55,10 +51,8 @@ export class ConversionRepository {
         })
         .lean();
 
-      return conversions;
+      return await conversions;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -89,8 +83,6 @@ export class ConversionRepository {
 
       return updated;
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });
@@ -107,8 +99,6 @@ export class ConversionRepository {
         to: coin,
       });
     } catch (err) {
-      console.log(err);
-
       throw new InternalServerErrorException({
         message: 'Something went wrong',
       });

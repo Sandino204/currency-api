@@ -1,4 +1,6 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import {
+  Body, Controller, Post, Put,
+} from '@nestjs/common';
 import { ConversionService } from './conversion.service';
 import { ConversionAllDto } from './dto/conversion-all.dto';
 import { ConversionDto } from './dto/conversion.dto';

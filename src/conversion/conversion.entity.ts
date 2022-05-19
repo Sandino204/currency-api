@@ -6,13 +6,13 @@ export type ConversionDocument = Conversion & Document;
 @Schema()
 export class Conversion {
   @Prop()
-  from: string;
+    from: string;
 
   @Prop()
-  to: string;
+    to: string;
 
   @Prop()
-  conversion: number;
+    conversion: number;
 }
 
 export const ConversionSchema = SchemaFactory.createForClass(Conversion);

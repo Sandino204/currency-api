@@ -17,22 +17,22 @@ export class CoinController {
 
   @Get()
   async getAll() {
-    return await this.coinService.getAllCoins();
+    return this.coinService.getAllCoins();
   }
 
   @Get('/:code')
   async getByCode(@Param('code') code: string) {
-    return await this.coinService.getCoinByCode(code);
+    return this.coinService.getCoinByCode(code);
   }
 
   @Post()
   async createCoin(@Body() payload: CreateCoinDto) {
-    return await this.coinService.createCoin(payload);
+    return this.coinService.createCoin(payload);
   }
 
   @Patch('/:code')
   async updateCoin(@Body() payload: UpdateBody, @Param('code') code: string) {
-    return await this.coinService.updateCoin({
+    return this.coinService.updateCoin({
       ...payload,
       code,
     });
@@ -40,6 +40,6 @@ export class CoinController {
 
   @Delete('/:id')
   async deleteCoin(@Param('id') id: string) {
-    return await this.coinService.deleteCoin(id);
+    return this.coinService.deleteCoin(id);
   }
 }

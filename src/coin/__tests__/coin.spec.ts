@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException, ConflictException } from '@nestjs/common';
+import { getModelToken } from '@nestjs/mongoose';
 import { CoinRepository } from '../coin.repository';
 import { CoinController } from '../coin.controller';
 import { Coin } from '../coin.entity';
 import { CoinService } from '../coin.service';
-import { NotFoundException, ConflictException } from '@nestjs/common';
-import { getModelToken } from '@nestjs/mongoose';
 import { ConversionRepository } from '../../conversion/conversion.repository';
 
 const getAllCoins: Coin[] = [

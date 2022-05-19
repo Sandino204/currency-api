@@ -6,13 +6,13 @@ export type CoinDocument = Coin & Document;
 @Schema()
 export class Coin {
   @Prop({ unique: true })
-  name: string;
+    name: string;
 
   @Prop({ unique: true })
-  symbol: string;
+    symbol: string;
 
   @Prop({ unique: true })
-  code: string;
+    code: string;
 }
 
 export const CoinSchema = SchemaFactory.createForClass(Coin);

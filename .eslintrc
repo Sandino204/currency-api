@@ -1,0 +1,58 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "prettier",
+    "airbnb-base",
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "react-app"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "overrides": [
+    {
+      "files": ["*/.spec.ts"],
+      "plugins": ["jest"],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off",
+        "jest/unbound-method": "error"
+      }
+    }
+  ],
+  "rules": {
+    "no-undef": ["error"],
+    "no-useless-constructor": "off",
+    "no-underscore-dangle": "off",
+    "func-names": "off",
+    "class-methods-use-this": "off",
+    "max-len": ["error", { "code": 200, "ignoreComments": true }],
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "object-curly-newline": "off",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never"
+      }
+    ],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+  }
+}
